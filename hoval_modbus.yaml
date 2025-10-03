@@ -1,0 +1,318 @@
+# Hoval Wärmepumpe - MODBUS Konfiguration
+# Version: Korrigiert mit funktionierendem Heizen/Kühlen
+
+- name: "Hoval Wärmepumpe"
+  type: tcp
+  host: 192.168.10.170  # Oder 192.168.90.149 falls das die richtige IP ist
+  port: 502
+  delay: 2
+  timeout: 10
+  
+  # ========================================
+  # SENSOREN - Alle wichtigen Messwerte
+  # ========================================
+  sensors:
+    # === TEMPERATUREN ===
+    - name: "Hoval Vorlauftemperatur"
+      address: 1513
+      unit_of_measurement: "°C"
+      scan_interval: 30
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Rücklauftemperatur"
+      address: 1535
+      unit_of_measurement: "°C"
+      scan_interval: 30
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    # === WARMWASSER ===
+    - name: "Hoval Warmwasser Ist Oben"
+      address: 1500
+      unit_of_measurement: "°C"
+      scan_interval: 30
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Warmwasser Ist Unten"
+      address: 27483
+      unit_of_measurement: "°C"
+      scan_interval: 30
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Warmwasser Soll"
+      address: 1499
+      unit_of_measurement: "°C"
+      scan_interval: 60
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Warmwasser Status"
+      address: 1504
+      scan_interval: 30
+      
+    - name: "Hoval Warmwasser Thermische Energie"
+      address: 27488
+      data_type: uint32
+      unit_of_measurement: "MWh"
+      scan_interval: 60
+      scale: 0.001
+      precision: 3
+      device_class: energy
+      state_class: total_increasing
+      
+    # === WÄRMEERZEUGER ===
+    - name: "Hoval Wärmeerzeuger Ist"
+      address: 18725
+      unit_of_measurement: "°C"
+      scan_interval: 30
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Wärmeerzeuger Soll"
+      address: 18724
+      unit_of_measurement: "°C"
+      scan_interval: 60
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    # === LEISTUNG & ENERGIE ===
+    - name: "Hoval Elektrische Leistung"
+      address: 25611
+      unit_of_measurement: "kW"
+      scan_interval: 30
+      scale: 0.01
+      precision: 2
+      device_class: power
+      state_class: measurement
+      
+    - name: "Hoval Thermische Leistung"
+      address: 25612
+      unit_of_measurement: "kW"
+      scan_interval: 30
+      scale: 1
+      precision: 2
+      device_class: power
+      state_class: measurement
+      
+    - name: "Hoval Leistungsabgabe Aktuell"
+      address: 18731
+      data_type: uint32
+      unit_of_measurement: "kW"
+      scan_interval: 30
+      scale: 0.1
+      precision: 1
+      device_class: power
+      state_class: measurement
+      
+    - name: "Hoval Modulation"
+      address: 18726
+      unit_of_measurement: "%"
+      scan_interval: 30
+      
+    - name: "Hoval WEZ Leistung"
+      address: 1536
+      unit_of_measurement: "%"
+      scan_interval: 30
+      
+    - name: "Hoval WEZ Status"
+      address: 1539
+      scan_interval: 30
+      
+    # === ENERGIEZÄHLER ===
+    - name: "Hoval Elektrische Gesamtenergie"
+      address: 25613
+      data_type: uint32
+      unit_of_measurement: "MWh"
+      scan_interval: 60
+      scale: 0.001
+      precision: 3
+      device_class: energy
+      state_class: total_increasing
+      
+    - name: "Hoval Thermische Gesamtenergie Heizen"
+      address: 27484
+      data_type: uint32
+      unit_of_measurement: "MWh"
+      scan_interval: 60
+      scale: 0.001
+      precision: 3
+      device_class: energy
+      state_class: total_increasing
+      
+    - name: "Hoval Thermische Gesamtenergie Kühlen"
+      address: 27486
+      data_type: uint32
+      unit_of_measurement: "MWh"
+      scan_interval: 60
+      scale: 0.001
+      precision: 3
+      device_class: energy
+      state_class: total_increasing
+      
+    # === BETRIEBSSTUNDEN ===
+    - name: "Hoval Betriebsstunden"
+      address: 1507
+      data_type: uint32
+      unit_of_measurement: "h"
+      scan_interval: 300
+      scale: 0.1
+      precision: 1
+      device_class: duration
+      state_class: total_increasing
+      
+    - name: "Hoval Schaltzyklen"
+      address: 1518
+      data_type: uint32
+      scan_interval: 300
+      state_class: total_increasing
+      
+    # === STATUS & STEUERUNG ===
+    - name: "Hoval FA Status"
+      address: 18723
+      scan_interval: 30
+      
+    - name: "Hoval Erzeuger Betriebsmeldung"
+      address: 18737
+      scan_interval: 30
+      
+    - name: "Hoval Fehlercode"
+      address: 1534
+      scan_interval: 60
+      
+    # === HEIZKREIS 1 ===
+    - name: "Hoval Heizkreis 1 Status"
+      address: 1501
+      scan_interval: 60
+      
+    - name: "Hoval Heizkreis 1 Vorlauf Soll"
+      address: 19562
+      unit_of_measurement: "°C"
+      scan_interval: 60
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Heizkreis 1 Raum Ist"
+      address: 1493
+      unit_of_measurement: "°C"
+      scan_interval: 60
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Heizkreis 1 Raum Soll"
+      address: 1481
+      unit_of_measurement: "°C"
+      scan_interval: 60
+      scale: 0.1
+      precision: 1
+      device_class: temperature
+      
+    - name: "Hoval Heizkreis 1 Pumpe"
+      address: 19706
+      scan_interval: 60
+      
+    - name: "Hoval Heizkreis 1 Mischer"
+      address: 19658
+      scan_interval: 60
+      
+    # === PUMPEN ===
+    - name: "Hoval Pumpe Wärmeerzeuger"
+      address: 18757
+      unit_of_measurement: "%"
+      scan_interval: 60
+      
+  # ========================================
+  # KLIMAREGELUNG - Mit korrekten Registern
+  # ========================================
+  climates:
+    # === HEIZKREIS 1 ===
+    - name: "Hoval Heizkreis 1"
+      address: 1493              # Aktuelle Raumtemperatur
+      target_temp_register: 1481 # Raum-Solltemperatur
+      scale: 0.1
+      precision: 1
+      temp_step: 0.5
+      min_temp: 10
+      max_temp: 30
+      hvac_mode_register:
+        address: 1478           # STEUER-Register (nicht 1501!)
+        values:
+          state_off: 0
+          state_heat: 4
+          state_cool: 8         # Muss getestet werden
+          
+    # === WARMWASSER ===
+    - name: "Hoval Warmwasser"
+      address: 1500             # Aktuelle WW-Temperatur
+      target_temp_register: 1497 # WW-Solltemperatur
+      scale: 0.1
+      precision: 1
+      temp_step: 1
+      min_temp: 40
+      max_temp: 65
+      hvac_mode_register:
+        address: 1496           # WW-Steuer-Register
+        values:
+          state_off: 0
+          state_heat: 1
+          
+  # ========================================
+  # SWITCHES - Betriebsarten-Steuerung
+  # ========================================
+  switches:
+    # Hauptschalter Heizen/Kühlen
+    - name: "Hoval Heizen Kühlen"
+      address: 1478
+      write_type: holding
+      command_on: 9   # Kühlen (Wert muss getestet werden)
+      command_off: 4  # Heizen
+      
+    # Betriebsart Aus
+    - name: "Hoval Standby"
+      address: 1478
+      write_type: holding
+      command_on: 0   # Aus
+      command_off: 4  # Heizen Normal
+      
+    # Heizen Normal
+    - name: "Hoval Heizen Normal"
+      address: 1478
+      write_type: holding
+      command_on: 4   # Heizen Normal/Frost
+      command_off: 0  # Aus
+      
+    # Testweise verschiedene Modi
+    - name: "Hoval Test Modus 1"
+      address: 1478
+      write_type: holding
+      command_on: 1   # Test Wert 1
+      command_off: 4  # Zurück auf Normal
+      
+    - name: "Hoval Test Modus 2"
+      address: 1478
+      write_type: holding
+      command_on: 2   # Test Wert 2
+      command_off: 4  # Zurück auf Normal
+      
+    - name: "Hoval Test Modus 3"
+      address: 1478
+      write_type: holding
+      command_on: 3   # Test Wert 3
+      command_off: 4  # Zurück auf Normal
+      
+    - name: "Hoval Test Modus 9"
+      address: 1478
+      write_type: holding
+      command_on: 9   # Test Wert 9 (evtl. Kühlen)
+      command_off: 4  # Zurück auf Normal
