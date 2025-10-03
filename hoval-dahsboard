@@ -1,0 +1,294 @@
+views:
+  - title: Übersicht
+    path: hoval
+    icon: mdi:heat-pump
+    cards:
+      - type: markdown
+        content: >
+          # 🔥 HOVAL WÄRMEPUMPE
+
+          **Status:** {{ states('sensor.hoval_fa_status_text') }} | **COP:** {{
+          states('sensor.hoval_cop_aktuell') }} | {{
+          states('sensor.hoval_effizienz_status') }}
+      - type: horizontal-stack
+        cards:
+          - type: thermostat
+            entity: climate.hoval_heizkreis_1
+            name: Heizkreis
+            features:
+              - type: climate-hvac-modes
+                hvac_modes:
+                  - 'off'
+                  - heat
+                  - cool
+          - type: thermostat
+            entity: climate.hoval_warmwasser
+            name: Warmwasser
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Normal
+            icon: mdi:home
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              service_data:
+                entity_id: climate.hoval_heizkreis_1
+                temperature: 20
+          - type: button
+            name: Komfort
+            icon: mdi:sofa
+            tap_action:
+              action: call-service
+              service: switch.turn_on
+              service_data:
+                entity_id: switch.hoval_komfort_modus
+          - type: button
+            name: Eco
+            icon: mdi:leaf
+            tap_action:
+              action: call-service
+              service: switch.turn_on
+              service_data:
+                entity_id: switch.hoval_eco_modus
+          - type: button
+            name: Kühlen
+            icon: mdi:snowflake
+            tap_action:
+              action: call-service
+              service: switch.turn_on
+              service_data:
+                entity_id: switch.hoval_heizen_kuhlen
+      - type: horizontal-stack
+        cards:
+          - type: gauge
+            entity: sensor.hoval_elektrische_leistung
+            name: Strom
+            min: 0
+            max: 10
+            severity:
+              green: 0
+              yellow: 5
+              red: 8
+          - type: gauge
+            entity: sensor.hoval_thermische_leistung
+            name: Wärme
+            min: 0
+            max: 20
+            severity:
+              green: 5
+              yellow: 10
+              red: 15
+          - type: gauge
+            entity: sensor.hoval_cop_aktuell
+            name: COP
+            min: 0
+            max: 7
+            severity:
+              red: 2
+              yellow: 3.5
+              green: 5
+      - type: glance
+        title: Temperaturen
+        entities:
+          - entity: sensor.hoval_vorlauftemperatur
+            name: Vorlauf
+          - entity: sensor.hoval_rucklauftemperatur_2
+            name: Rücklauf
+          - entity: sensor.hoval_spreizung
+            name: Spreizung
+          - entity: sensor.hoval_heizkreis_1_mischer_text
+            name: Mischer
+        columns: 4
+      - type: glance
+        title: Warmwasser
+        entities:
+          - entity: sensor.hoval_warmwasser_ist_oben
+            name: Oben
+          - entity: sensor.hoval_warmwasser_ist_unten
+            name: Unten
+          - entity: sensor.hoval_warmwasser_soll
+            name: Soll
+          - entity: sensor.hoval_warmwasser_differenz
+            name: Differenz
+        columns: 4
+      - type: entities
+        title: Effizienz & Kosten
+        entities:
+          - entity: sensor.hoval_cop_aktuell
+            name: COP Live
+          - entity: sensor.hoval_cop_heute
+            name: Tages-COP
+          - entity: sensor.hoval_stromkosten_heute
+            name: Kosten heute
+          - entity: sensor.hoval_jaz
+            name: JAZ (Jahresarbeitszahl)
+          - entity: sensor.hoval_effizienz_status
+            name: Bewertung
+      - type: history-graph
+        title: Verlauf 24h
+        entities:
+          - sensor.hoval_elektrische_leistung
+          - sensor.hoval_thermische_leistung
+          - sensor.hoval_cop_aktuell
+        hours_to_show: 24
+        refresh_interval: 60
+      - type: glance
+        title: Status
+        entities:
+          - entity: sensor.hoval_fa_status_text
+            name: WP
+          - entity: sensor.hoval_heizkreis_1_status_text
+            name: Heizkreis
+          - entity: sensor.hoval_heizkreis_1_pumpe_text
+            name: Pumpe
+          - entity: sensor.hoval_fehlercode_text
+            name: System
+      - type: entities
+        title: Betriebsdaten
+        entities:
+          - entity: sensor.hoval_betriebsstunden
+            name: Betriebsstunden
+          - entity: sensor.hoval_schaltzyklen
+            name: Schaltzyklen
+          - entity: sensor.hoval_modulation
+            name: Modulation %
+      - type: statistics-graph
+        title: Wochenübersicht COP
+        entities:
+          - sensor.hoval_cop_aktuell
+        stat_types:
+          - mean
+          - min
+          - max
+        period:
+          days_to_show: 7
+  - title: Monitoring
+    path: monitoring
+    icon: mdi:chart-line
+    cards:
+      - type: history-graph
+        title: Temperaturverlauf 12h
+        entities:
+          - sensor.hoval_vorlauftemperatur
+          - sensor.hoval_rucklauftemperatur_2
+          - sensor.hoval_warmwasser_ist_oben
+          - sensor.hoval_heizkreis_1_raum_ist
+        hours_to_show: 12
+      - type: history-graph
+        title: Leistungsverlauf 24h
+        entities:
+          - sensor.hoval_elektrische_leistung
+          - sensor.hoval_thermische_leistung
+        hours_to_show: 24
+      - type: statistics-graph
+        title: Energieverbrauch
+        entities:
+          - sensor.hoval_elektrische_gesamtenergie
+          - sensor.hoval_thermische_gesamtenergie_heizen
+        stat_types:
+          - change
+        period:
+          days_to_show: 30
+  - title: Steuerung
+    path: steuerung
+    icon: mdi:cog
+    cards:
+      - type: entities
+        title: Betriebsmodi
+        entities:
+          - entity: switch.hoval_heizen_kuhlen
+            name: Heizen/Kühlen
+          - entity: switch.hoval_komfort_modus
+            name: Komfort
+          - entity: switch.hoval_eco_modus
+            name: Eco
+      - type: grid
+        title: Heizkreis Temperatur
+        columns: 5
+        cards:
+          - type: button
+            name: 16°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 16
+              target:
+                entity_id: climate.hoval_heizkreis_1
+          - type: button
+            name: 18°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 18
+              target:
+                entity_id: climate.hoval_heizkreis_1
+          - type: button
+            name: 20°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 20
+              target:
+                entity_id: climate.hoval_heizkreis_1
+          - type: button
+            name: 22°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 22
+              target:
+                entity_id: climate.hoval_heizkreis_1
+          - type: button
+            name: 24°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 24
+              target:
+                entity_id: climate.hoval_heizkreis_1
+      - type: grid
+        title: Warmwasser Temperatur
+        columns: 4
+        cards:
+          - type: button
+            name: 45°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 45
+              target:
+                entity_id: climate.hoval_warmwasser
+          - type: button
+            name: 50°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 50
+              target:
+                entity_id: climate.hoval_warmwasser
+          - type: button
+            name: 55°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 55
+              target:
+                entity_id: climate.hoval_warmwasser
+          - type: button
+            name: 60°C
+            tap_action:
+              action: call-service
+              service: climate.set_temperature
+              data:
+                temperature: 60
+              target:
+                entity_id: climate.hoval_warmwasser
