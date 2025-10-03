@@ -14,7 +14,10 @@ I use a **Modbus module** installed in the Hoval Belaria 13 to access and read d
 
 ## Requirements
 - Hoval Belaria 13 with Modbus module  
-- Home Assistant setup with Modbus integration enabled  
+- Home Assistant setup with Modbus integration enabled
+
+## Link to HAA-Forum:
+- https://community.home-assistant.io/t/hoval-belaria-integration-gateway/692870/
 
 ## Disclaimer
 This is a personal project and not an official Hoval integration. Use at your own risk.  
