@@ -3,7 +3,7 @@
 
 - name: "Hoval Wärmepumpe"
   type: tcp
-  host: 192.168.10.170  # Oder 192.168.90.149 falls das die richtige IP ist
+  host: 192.168.10.170
   port: 502
   delay: 2
   timeout: 10
