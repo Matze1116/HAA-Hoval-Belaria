@@ -1,11 +1,19 @@
-# Hoval Template-Sensoren für Status-Texte
-# Datei: /config/yamls/sensoren/hoval_templates.yaml
+# ========================================
+# HOVAL BELARIA 13 PRO - TEMPLATE SENSOREN
+# ========================================
+# Datei: /config/yamls/sensoren/hoval_sensoren.yaml
+# Für !include_dir_merge_list Struktur
+# ========================================
 
 - platform: template
   sensors:
+    # ========================================
+    # STATUS-TEXTE
+    # ========================================
+    
     # === WÄRMEPUMPE STATUS ===
     hoval_fa_status_text:
-      friendly_name: "Hoval FA Status Text"
+      friendly_name: "Hoval FA Status"
       value_template: >-
         {% set status = states('sensor.hoval_fa_status') | int(default=-1) %}
         {% if status == -1 %} Keine Daten
@@ -86,11 +94,11 @@
         {% endif %}
       icon_template: mdi:water-boiler
       
-    # === HEIZKREIS 1 STATUS ===
-    hoval_heizkreis_1_status_text:
+    # === HEIZKREIS STATUS ===
+    hoval_heizkreis_status_text:
       friendly_name: "Hoval Heizkreis Status"
       value_template: >-
-        {% set status = states('sensor.hoval_heizkreis_1_status') | int(default=-1) %}
+        {% set status = states('sensor.hoval_heizkreis_status') | int(default=-1) %}
         {% if status == -1 %} Keine Daten
         {% elif status == 0 %} Aus
         {% elif status == 1 %} Heizen Normal
@@ -112,10 +120,10 @@
         {% endif %}
       icon_template: mdi:radiator
       
-    hoval_heizkreis_1_pumpe_text:
+    hoval_heizkreis_pumpe_text:
       friendly_name: "Hoval Pumpe Status"
       value_template: >-
-        {% set status = states('sensor.hoval_heizkreis_1_pumpe') | int(default=-1) %}
+        {% set status = states('sensor.hoval_heizkreis_pumpe') | int(default=-1) %}
         {% if status == -1 %} Keine Daten
         {% elif status == 0 %} Aus
         {% elif status == 1 %} An
@@ -123,10 +131,10 @@
         {% endif %}
       icon_template: mdi:pump
       
-    hoval_heizkreis_1_mischer_text:
+    hoval_heizkreis_mischer_text:
       friendly_name: "Hoval Mischer Position"
       value_template: >-
-        {% set status = states('sensor.hoval_heizkreis_1_mischer') | int(default=-999) %}
+        {% set status = states('sensor.hoval_heizkreis_mischer') | int(default=-999) %}
         {% if status == -999 %} Keine Daten
         {% elif status == -100 %} Zu
         {% elif status >= -99 and status < 0 %} {{ status|abs }}% geschlossen
@@ -137,7 +145,11 @@
         {% endif %}
       icon_template: mdi:valve
       
-    # === BERECHNETE WERTE ===
+    # ========================================
+    # BERECHNETE WERTE
+    # ========================================
+    
+    # === COP AKTUELL ===
     hoval_cop_aktuell:
       friendly_name: "Hoval COP Aktuell"
       unit_of_measurement: ""
@@ -154,56 +166,16 @@
         elektrische_leistung: "{{ states('sensor.hoval_elektrische_leistung') }} kW"
         thermische_leistung: "{{ states('sensor.hoval_thermische_leistung') }} kW"
         
-    # === PUFFERSPEICHER STATUS (aktivieren falls vorhanden) ===
-    # hoval_pufferspeicher_status_text:
-    #   friendly_name: "Hoval Pufferspeicher Status"
-    #   value_template: >-
-    #     {% set status = states('sensor.hoval_pufferspeicher_status') | int(default=-1) %}
-    #     {% if status == -1 %} Keine Daten
-    #     {% elif status == 0 %} Aus
-    #     {% elif status == 1 %} Temperatur tief
-    #     {% elif status == 2 %} Ladung läuft
-    #     {% elif status == 3 %} Nachlauf aktiv
-    #     {% elif status == 4 %} Sollwert erfüllt
-    #     {% elif status == 6 %} Energiezwang
-    #     {% elif status == 7 %} Abschöpffunktion
-    #     {% elif status == 8 %} Vorzugsbetrieb
-    #     {% elif status == 9 %} Abnahmezwang
-    #     {% else %} Code {{ status }}
-    #     {% endif %}
-    #   icon_template: mdi:barrel
-    
-    # === LÜFTUNG STATUS (aktivieren falls vorhanden) ===
-    # hoval_luftung_status_text:
-    #   friendly_name: "Hoval Lüftung Status"
-    #   value_template: >-
-    #     {% set status = states('sensor.hoval_luftung_status') | int(default=-1) %}
-    #     {% if status == -1 %} Keine Daten
-    #     {% elif status == 0 %} Standby
-    #     {% elif status == 1 %} Normalbetrieb
-    #     {% elif status == 2 %} VOC Modus
-    #     {% elif status == 3 %} Feuchtigkeitsmodus
-    #     {% elif status == 4 %} Frostschutz
-    #     {% elif status == 5 %} CoolVent
-    #     {% elif status == 6 %} Fehler
-    #     {% elif status == 7 %} Sommerfeuchte
-    #     {% elif status == 8 %} Ausschaltstopp
-    #     {% else %} Code {{ status }}
-    #     {% endif %}
-    #   icon_template: mdi:air-filter
-    
-# Zusätzliche berechnete Sensoren
-- platform: template
-  sensors:
-    # BERECHNETE TEMPERATUREN
+    # === SPREIZUNG ===
     hoval_spreizung:
       friendly_name: "Hoval Spreizung"
       unit_of_measurement: "°C"
       value_template: >-
         {{ (states('sensor.hoval_vorlauftemperatur') | float(0) - 
-            states('sensor.hoval_rucklauftemperatur_2') | float(0)) | round(1) }}
+            states('sensor.hoval_rucklauftemperatur') | float(0)) | round(1) }}
       icon_template: mdi:arrow-split-horizontal
       
+    # === WARMWASSER DIFFERENZ ===
     hoval_warmwasser_differenz:
       friendly_name: "Hoval WW Differenz"
       unit_of_measurement: "°C"
@@ -212,7 +184,7 @@
             states('sensor.hoval_warmwasser_ist_oben') | float(0)) | round(1) }}
       icon_template: mdi:thermometer-lines
       
-    # EFFIZIENZ-BEWERTUNG
+    # === EFFIZIENZ-BEWERTUNG ===
     hoval_effizienz_status:
       friendly_name: "Hoval Effizienz"
       value_template: >-
@@ -231,12 +203,12 @@
         {% else %} mdi:alert
         {% endif %}
         
-    # BETRIEBSMODUS (kombiniert)
+    # === BETRIEBSMODUS KOMBINIERT ===
     hoval_betriebsmodus:
       friendly_name: "Hoval Betriebsmodus"
       value_template: >-
         {% set fa = states('sensor.hoval_fa_status') | int(0) %}
-        {% set hk = states('sensor.hoval_heizkreis_1_status') | int(0) %}
+        {% set hk = states('sensor.hoval_heizkreis_status') | int(0) %}
         {% set ww = states('sensor.hoval_warmwasser_status') | int(0) %}
         {% if fa == 4 %} 💧 Warmwasser läuft
         {% elif fa == 1 %} 🔥 Heizen aktiv
@@ -249,29 +221,22 @@
         {% endif %}
       icon_template: mdi:home-thermometer
       
-    # KOSTEN-BERECHNUNG (0.30 €/kWh anpassen!)
-    hoval_stromkosten_heute:
-      friendly_name: "Hoval Stromkosten heute"
+    # ========================================
+    # KOSTEN & ENERGIE (Strompreis anpassen!)
+    # ========================================
+    
+    # === STROMKOSTEN GESAMT ===
+    # WICHTIG: 0.113 €/kWh an deinen Tarif anpassen! - nur Strom
+    hoval_stromkosten_gesamt:
+      friendly_name: "Hoval Stromkosten Gesamt"
       unit_of_measurement: "€"
       value_template: >-
-        {{ (states('sensor.hoval_strom_tag') | float(0) * 0.30 * 1000) | round(2) }}
+        {% set strom_mwh = states('sensor.hoval_elektrische_gesamtenergie') | float(0) %}
+        {% set strom_kwh = strom_mwh * 1000 %}
+        {{ (strom_kwh * 0.113) | round(2) }}
       icon_template: mdi:currency-eur
       
-    # COP TAGESSCHNITT
-    hoval_cop_heute:
-      friendly_name: "Hoval COP Heute"
-      unit_of_measurement: ""
-      value_template: >-
-        {% set strom = states('sensor.hoval_strom_tag') | float(0.001) %}
-        {% set heizen = states('sensor.hoval_heizen_tag') | float(0) %}
-        {% if strom > 0 %}
-          {{ (heizen / strom) | round(2) }}
-        {% else %}
-          0
-        {% endif %}
-      icon_template: mdi:gauge
-      
-    # JAHRESARBEITSZAHL
+    # === JAHRESARBEITSZAHL (JAZ) ===
     hoval_jaz:
       friendly_name: "Hoval JAZ"
       unit_of_measurement: ""
@@ -285,3 +250,39 @@
           0
         {% endif %}
       icon_template: mdi:sigma
+      
+    # ========================================
+    # ZUSÄTZLICHE BERECHNUNGEN
+    # ========================================
+    
+    # === HEIZKREIS VORLAUF-DIFFERENZ ===
+    hoval_vorlauf_differenz:
+      friendly_name: "Hoval Vorlauf-Abweichung"
+      unit_of_measurement: "°C"
+      value_template: >-
+        {{ (states('sensor.hoval_vorlauftemperatur') | float(0) - 
+            states('sensor.hoval_heizkreis_vorlauf_soll') | float(0)) | round(1) }}
+      icon_template: mdi:thermometer-alert
+      
+    # === RAUM-DIFFERENZ ===
+    hoval_raum_differenz:
+      friendly_name: "Hoval Raum-Abweichung"
+      unit_of_measurement: "°C"
+      value_template: >-
+        {{ (states('sensor.hoval_heizkreis_raum_ist') | float(0) - 
+            states('sensor.hoval_heizkreis_raum_soll') | float(0)) | round(1) }}
+      icon_template: mdi:home-thermometer-outline
+      
+    # === LEISTUNGSGRAD ===
+    hoval_leistungsgrad:
+      friendly_name: "Hoval Leistungsgrad"
+      unit_of_measurement: "%"
+      value_template: >-
+        {% set aktuell = states('sensor.hoval_elektrische_leistung') | float(0) %}
+        {% set max_leistung = 13 %}
+        {% if max_leistung > 0 %}
+          {{ ((aktuell / max_leistung) * 100) | round(1) }}
+        {% else %}
+          0
+        {% endif %}
+      icon_template: mdi:gauge
